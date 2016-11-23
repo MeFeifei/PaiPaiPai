@@ -51,7 +51,7 @@
             android:layout_marginStart="20dp"
             android:gravity="center_vertical"
             android:layout_marginLeft="20dp" />
-        <EditText
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/nickname_edit"
             android:layout_width="240dp"
             android:layout_height="match_parent"
@@ -79,7 +79,7 @@
             android:layout_marginStart="20dp"
             android:gravity="center_vertical"
             android:layout_marginLeft="20dp" />
-        <EditText
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/gender_edit"
             android:layout_width="240dp"
             android:layout_height="match_parent"
@@ -107,7 +107,7 @@
             android:layout_marginStart="20dp"
             android:gravity="center_vertical"
             android:layout_marginLeft="20dp" />
-        <EditText
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/signal_edit"
             android:layout_width="280dp"
             android:layout_height="match_parent"

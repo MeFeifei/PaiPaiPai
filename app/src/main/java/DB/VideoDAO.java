@@ -79,4 +79,23 @@ public class VideoDAO {
         return isRead;
     }
 
+    /**
+     * 删除视频
+     * @param person
+     * @param path
+     * @return
+     */
+    public boolean deleteVideo(Person person,String path){
+        boolean isDelete = false;
+        SQLiteDatabase db = myDbOpenHelper.getWritableDatabase();
+        try {
+            db.delete("video","path=?",new String[]{path});
+            isDelete = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(LOG_TAG,"Delete Error"+e.getMessage());
+        }
+        return isDelete;
+    }
+
 }

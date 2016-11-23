@@ -1,8 +1,10 @@
 package com.example.feifei.paipaipai;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import entity.VideoListAdapter;
 
 
 public class VideoList_Fragment extends Fragment {
+    private static String LOG_TAG= "VideoList";
     private List<VideoItemBean> datalist;
     private Context context;
     private Index mActivity;
@@ -52,7 +55,6 @@ public class VideoList_Fragment extends Fragment {
 
         return datalist;
     }
-
 
 
 }

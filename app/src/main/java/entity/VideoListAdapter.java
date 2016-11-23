@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.feifei.paipaipai.R;
+import com.example.feifei.paipaipai.VideoList_Fragment;
 
 import java.io.File;
 import java.util.List;
@@ -27,21 +28,22 @@ import java.util.List;
 public class VideoListAdapter extends BaseAdapter {
     private static String LOG_TAG="VideoListAdapter";
 
-    private List<VideoItemBean>mlist;
+    private List<VideoItemBean>mList;
     private LayoutInflater mInflater;
 
     public VideoListAdapter(Context context, List<VideoItemBean>list){
-        mlist=list;
+        mList=list;
         mInflater=LayoutInflater.from(context);
+
     }
     @Override
     public int getCount() {
-        return mlist.size();
+        return mList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mlist.get(position);
+        return mList.get(position);
     }
 
     @Override
@@ -53,20 +55,24 @@ public class VideoListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null){
-            viewHolder=new ViewHolder();
+            viewHolder =new ViewHolder();
             convertView=mInflater.inflate(R.layout.list_item,null);
             viewHolder.title= (TextView) convertView.findViewById(R.id.list_title);
             viewHolder.video= (ImageView) convertView.findViewById(R.id.list_imageView_show);
+            viewHolder.comment= (LinearLayout) convertView.findViewById(R.id.div_comm);
             convertView.setTag(viewHolder);
         }
         else {
-            viewHolder= (ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        VideoItemBean videoItemBean =mlist.get(position);
+        VideoItemBean videoItemBean =mList.get(position);
 
-        setView(convertView,viewHolder.video);
+        setView(convertView, viewHolder.video);
         viewHolder.title.setText(videoItemBean.ItemVideoName);
         viewHolder.video.setImageBitmap(getBitmap(videoItemBean.ItemVideoPath));
+
+        DeleteListener deleteListener = new DeleteListener(position);
+        viewHolder.video.setOnClickListener(deleteListener);
 
         return convertView;
     }
@@ -74,6 +80,20 @@ public class VideoListAdapter extends BaseAdapter {
     private class ViewHolder{
         TextView title;
         ImageView video;
+        LinearLayout comment;
+    }
+    private class DeleteListener implements View.OnClickListener{
+        private int m_position;
+
+        DeleteListener(int pos) {
+            m_position = pos;
+        }
+        @Override
+        public void onClick(View v) {
+            Log.i(LOG_TAG,"line:"+m_position+":"+mList.get(m_position).ItemVideoName);
+            mList.remove(m_position);
+            notifyDataSetChanged();
+        }
     }
 
     /**
