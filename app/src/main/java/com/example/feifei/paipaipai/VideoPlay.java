@@ -1,22 +1,22 @@
 package com.example.feifei.paipaipai;
 
-
-import android.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,19 +26,16 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+public class VideoPlay extends AppCompatActivity implements View.OnClickListener{
+    private static final String LOG_TAG = "VideoPreviewActivity";
+    private static final int RES_CODE = 111;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class RecordFragment extends Fragment implements View.OnClickListener{
-    private static String LOG_TAG = "Record Fragment";
-    private Index mActivity;
-
+    /**
+     * 播放进度
+     */
     private static final int PLAY_PROGRESS = 110;
 
     private VideoView videoViewShow;
-    private ImageView imageViewShow;
-    private Button buttonDone;
     private RelativeLayout rlBottomRoot;
     private Button buttonPlay;
     private TextView textViewCountDown;
@@ -47,7 +44,10 @@ public class RecordFragment extends Fragment implements View.OnClickListener{
      * 视频路径
      */
     private String path;
-
+    /**
+     * 视频时间
+     */
+    private int time;
     private int currentTime;
     private Timer timer;
 
@@ -56,16 +56,18 @@ public class RecordFragment extends Fragment implements View.OnClickListener{
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case PLAY_PROGRESS:
-                    /*视频时间*/
-                    int time = (videoViewShow.getDuration() + 1000) / 1000;
+                    time = (videoViewShow.getDuration() + 1000) / 1000;
                     currentTime = (videoViewShow.getCurrentPosition() + 1500) / 1000;
                     progressVideo.setMax(videoViewShow.getDuration());
+//                    LogUtil.e(LOG_TAG, time + "..time：" + currentTime);
                     progressVideo.setProgress(videoViewShow.getCurrentPosition());
                     if (currentTime < 10) {
                         textViewCountDown.setText("00:0" + currentTime);
                     } else {
                         textViewCountDown.setText("00:" + currentTime);
                     }
+                    //currentTime++;
+                    //达到指定时间，停止播放
                     if (!videoViewShow.isPlaying() && time > 0) {
                         progressVideo.setProgress(videoViewShow.getDuration());
                         if (timer != null) {
@@ -77,57 +79,34 @@ public class RecordFragment extends Fragment implements View.OnClickListener{
         }
     };
 
-
-    public RecordFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_record, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_video_play);
 
-        assignViews(view);
-        initViews(view);
-        initData();
-        return view;
+        path = getIntent().getStringExtra("videoPlay");
+        assignViews();
+        initView();
+
     }
-
-    /**
-     * 初始化对象
-     * @param v
-     */
-    private void assignViews(View v) {
-        videoViewShow = (VideoView) v.findViewById(R.id.videoView_show);
-        imageViewShow = (ImageView) v.findViewById(R.id.imageView_show);
-        buttonDone = (Button) v.findViewById(R.id.button_done);
-        rlBottomRoot = (RelativeLayout) v.findViewById(R.id.rl_bottom_root);
-        buttonPlay = (Button) v.findViewById(R.id.button_play);
-        textViewCountDown = (TextView) v.findViewById(R.id.textView_count_down);
-        progressVideo = (ProgressBar) v.findViewById(R.id.progressBar_loading);
-
-        mActivity = (Index) getActivity();
+    private void assignViews() {
+        videoViewShow = (VideoView) findViewById(R.id.play_videoView_show);
+        rlBottomRoot = (RelativeLayout) findViewById(R.id.play_rl_bottom_root);
+        buttonPlay = (Button) findViewById(R.id.play_button_play);
+        textViewCountDown = (TextView) findViewById(R.id.play_textView_count_down);
+        progressVideo = (ProgressBar) findViewById(R.id.play_progressBar_loading);
     }
-
-    /**
-     * 自定义界面值
-     * @param v
-     */
-    private void initViews(View v){
-        buttonDone.setOnClickListener(this);
+    public void initView() {
+        (findViewById(R.id.play_return)).setOnClickListener(this);
         buttonPlay.setOnClickListener(this);
 
         textViewCountDown.setText("00:00");
 
-        DisplayMetrics dm = v.getResources().getDisplayMetrics();
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) videoViewShow.getLayoutParams();
         layoutParams.height = width * 4 / 3;//根据屏幕宽度设置预览控件的尺寸，为了解决预览拉伸问题
-        //LogUtil.e(LOG_TAG, "mSurfaceViewWidth:" + width + "...mSurfaceViewHeight:" + layoutParams.height);
         videoViewShow.setLayoutParams(layoutParams);
-        imageViewShow.setLayoutParams(layoutParams);
 
         FrameLayout.LayoutParams rlBottomRootLayoutParams = (FrameLayout.LayoutParams) rlBottomRoot.getLayoutParams();
         rlBottomRootLayoutParams.height = width / 3 * 2;
@@ -135,41 +114,16 @@ public class RecordFragment extends Fragment implements View.OnClickListener{
     }
 
     /**
-     * 初始化视频地址
-     */
-    private void initData(){
-        path = mActivity.getVideoPath();
-        try {
-            if (TextUtils.isEmpty(path)){
-                Log.i(LOG_TAG,"获取视频地址为空");
-            }else {
-                /*要上传的视频文件*/
-                File file = new File(path);
-                //获取第一帧图片，预览使用
-                if (file.length() != 0) {
-                    MediaMetadataRetriever media = new MediaMetadataRetriever();
-                    media.setDataSource(path);
-                    Bitmap bitmap = media.getFrameAtTime();
-                    imageViewShow.setImageBitmap(bitmap);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            Log.i("Error","视频预览初始化数据出错");
-        }
-
-    }
-    /**
      * 播放视频
      */
     private void playVideo() {
         textViewCountDown.setText("00:00");
         progressVideo.setProgress(0);
 
-//        //视频控制面板，不需要可以不设置
-//        MediaController controller = new MediaController(view.getContext());
-//        controller.setVisibility(View.GONE);
-//        videoViewShow.setMediaController(controller);
+        //视频控制面板，不需要可以不设置
+        MediaController controller = new MediaController(this);
+        controller.setVisibility(View.GONE);
+        videoViewShow.setMediaController(controller);
         videoViewShow.setVideoPath(path);
         videoViewShow.start();
         videoViewShow.requestFocus();
@@ -196,27 +150,21 @@ public class RecordFragment extends Fragment implements View.OnClickListener{
         }, 0, 100);
     }
 
-
-
-
     @Override
     public void onClick(View v) {
-
-        switch (v.getId()){
-            case R.id.button_done:
-                mActivity.takePicture();
-                break;
-            case R.id.button_play:
+        switch (v.getId()) {
+            case R.id.play_button_play:
                 buttonPlay.setVisibility(View.GONE);
-                imageViewShow.setVisibility(View.GONE);
                 playVideo();
                 break;
+            case R.id.play_return:
+                finish();
         }
     }
-
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         videoViewShow.stopPlayback();
     }
+
 }

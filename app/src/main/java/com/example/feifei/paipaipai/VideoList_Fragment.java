@@ -40,7 +40,7 @@ public class VideoList_Fragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.list_video);
         mActivity = (Index) getActivity();
         datalist = new ArrayList<>();
-        listView.setAdapter(new VideoListAdapter(context,getData(),listView));
+        listView.setAdapter(new VideoListAdapter(context,getData(),listView,mActivity));
         return view;
     }
 

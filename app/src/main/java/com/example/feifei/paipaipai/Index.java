@@ -112,6 +112,12 @@ public class Index extends AppCompatActivity implements View.OnClickListener{
         startActivity(it);
         this.finish();
     }
+    //播放视频
+    public void playVideo(String path){
+        Intent intent = new Intent(this,VideoPlay.class);
+        intent.putExtra("videoPlay",path);
+        startActivity(intent);
+    }
 
     //读取视频表信息
     private void readVideoList(){

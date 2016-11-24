@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_video_play"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0a0909"
+    tools:context="com.example.feifei.paipaipai.VideoPlay">
+
+    <LinearLayout
+        android:id="@+id/play_return"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:drawableLeft="@mipmap/btn_back"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="1/1"
+            android:textColor="#f0f0f0"
+            android:textSize="15sp"
+            />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical">
+
+        <VideoView
+            android:id="@+id/play_videoView_show"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+
+
+        <Button
+            android:id="@+id/play_button_play"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:background="@mipmap/video_play" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <RelativeLayout
+            android:id="@+id/play_rl_bottom_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/button_bg_red" />
+
+                <TextView
+                    android:id="@+id/play_textView_count_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#f0f0f0"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/play_progressBar_loading"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/progressbar_video" />
+
+
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

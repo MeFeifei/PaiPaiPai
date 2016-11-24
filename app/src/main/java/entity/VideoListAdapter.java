@@ -1,5 +1,6 @@
 package entity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.feifei.paipaipai.Index;
 import com.example.feifei.paipaipai.R;
 
 import java.io.File;
@@ -34,12 +36,14 @@ public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrol
     private boolean first;//是否是第一次加载
     private ImageLoader imageLoader;
     private Context mContext;
+    private Index mActivity;
 
     public static String imagePath[];//视频地址
 
-    public VideoListAdapter(Context context, List<VideoItemBean>list,ListView listView){
+    public VideoListAdapter(Context context, List<VideoItemBean>list, ListView listView, Activity activity){
         this.mList = list;
         this.mContext = context;
+        this.mActivity = (Index) activity;
         first = true;
 
         imageLoader = new ImageLoader(listView);
@@ -87,8 +91,8 @@ public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrol
         String urlTag = videoItemBean.getItemVideoPath();
         viewHolder.video.setTag(urlTag);
 
-        DeleteListener deleteListener = new DeleteListener(position);
-        viewHolder.video.setOnClickListener(deleteListener);
+        PlayListener playListener = new PlayListener(position);
+        viewHolder.video.setOnClickListener(playListener);
 
         return convertView;
     }
@@ -134,17 +138,16 @@ public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrol
         LinearLayout comment;
     }
     //自定义监听器
-    private class DeleteListener implements View.OnClickListener{
+    private class PlayListener implements View.OnClickListener{
         private int m_position;
 
-        DeleteListener(int pos) {
+        PlayListener(int pos) {
             m_position = pos;
         }
         @Override
         public void onClick(View v) {
-            Log.i(LOG_TAG,"line:"+m_position+":"+mList.get(m_position).ItemVideoName);
-            mList.remove(m_position);
-            notifyDataSetChanged();
+            Log.i(LOG_TAG,"line:"+m_position+":"+mList.get(m_position).getItemVideoName());
+            mActivity.playVideo(mList.get(m_position).getItemVideoPath());
         }
     }
 
