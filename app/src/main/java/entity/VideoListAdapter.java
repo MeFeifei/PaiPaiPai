@@ -1,39 +1,53 @@
 package entity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.feifei.paipaipai.R;
-import com.example.feifei.paipaipai.VideoList_Fragment;
 
 import java.io.File;
 import java.util.List;
 
+import controller.ImageLoader;
+
 /**
+ * 自定义适配器
  * Created by feifei on 16/10/13.
  */
 
-public class VideoListAdapter extends BaseAdapter {
+public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrollListener{
     private static String LOG_TAG="VideoListAdapter";
 
     private List<VideoItemBean>mList;
-    private LayoutInflater mInflater;
+    private int mStart,mEnd;
+    private boolean first;//是否是第一次加载
+    private ImageLoader imageLoader;
+    private Context mContext;
 
-    public VideoListAdapter(Context context, List<VideoItemBean>list){
-        mList=list;
-        mInflater=LayoutInflater.from(context);
+    public static String imagePath[];//视频地址
+
+    public VideoListAdapter(Context context, List<VideoItemBean>list,ListView listView){
+        this.mList = list;
+        this.mContext = context;
+        first = true;
+
+        imageLoader = new ImageLoader(listView);
+        imagePath = new String[list.size()];
+        for (int i=0;i<list.size();i++){
+            imagePath[i] = list.get(i).getItemVideoPath();
+        }
+        listView.setOnScrollListener(this);
 
     }
     @Override
@@ -56,7 +70,7 @@ public class VideoListAdapter extends BaseAdapter {
         ViewHolder viewHolder;
         if (convertView == null){
             viewHolder =new ViewHolder();
-            convertView=mInflater.inflate(R.layout.list_item,null);
+            convertView=LayoutInflater.from(mContext).inflate(R.layout.list_item,null);
             viewHolder.title= (TextView) convertView.findViewById(R.id.list_title);
             viewHolder.video= (ImageView) convertView.findViewById(R.id.list_imageView_show);
             viewHolder.comment= (LinearLayout) convertView.findViewById(R.id.div_comm);
@@ -68,13 +82,50 @@ public class VideoListAdapter extends BaseAdapter {
         VideoItemBean videoItemBean =mList.get(position);
 
         setView(convertView, viewHolder.video);
-        viewHolder.title.setText(videoItemBean.ItemVideoName);
-        viewHolder.video.setImageBitmap(getBitmap(videoItemBean.ItemVideoPath));
+        viewHolder.title.setText(videoItemBean.getItemVideoName());
+        //异步加载预览图片
+        String urlTag = videoItemBean.getItemVideoPath();
+        viewHolder.video.setTag(urlTag);
 
         DeleteListener deleteListener = new DeleteListener(position);
         viewHolder.video.setOnClickListener(deleteListener);
 
         return convertView;
+    }
+
+    /**
+     * 滑动监听器，滑动时停止所有任务保证流畅性，滑动结束时加载数据
+     * @param view
+     * @param scrollState
+     */
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        //滑动结束时加载预览图片
+        if (scrollState ==SCROLL_STATE_IDLE){
+            imageLoader.loadImage(mStart,mEnd);
+        }else {//滑动时停止任务
+            imageLoader.cancelAllTask();
+        }
+
+    }
+
+    /**
+     * 提供滑动时上下界限
+     * 第一次加载时实现预加载
+     * @param view
+     * @param firstVisibleItem
+     * @param visibleItemCount
+     * @param totalItemCount
+     */
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        mStart = firstVisibleItem;
+        mEnd = mStart + visibleItemCount;
+        //第一次调用时预加载
+        if (first && visibleItemCount >0){
+            imageLoader.loadImage(mStart,mEnd);
+        }
+
     }
 
     private class ViewHolder{
@@ -109,30 +160,7 @@ public class VideoListAdapter extends BaseAdapter {
         imageView.setLayoutParams(layoutParams);
 
     }
-    /**
-     * 获取视频预览图片
-     * @param path
-     * @return
-     */
-    private Bitmap getBitmap(String path){
-        Bitmap bitmap = null;
-        try {
-            if (TextUtils.isEmpty(path)){
-                Log.i(LOG_TAG,"获取视频地址为空");
-            }else {
-                File file = new File(path);
-                //获取第一帧图片，预览使用
-                if (file.length() != 0) {
-                    MediaMetadataRetriever media = new MediaMetadataRetriever();
-                    media.setDataSource(path);
-                    bitmap = media.getFrameAtTime();
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            Log.i("Error","视频预览初始化数据出错");
-        }
-        return bitmap;
-    }
+
+
 }
 
