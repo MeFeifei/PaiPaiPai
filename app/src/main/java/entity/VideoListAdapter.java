@@ -133,6 +133,7 @@ public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrol
         ImageView video;
         LinearLayout comment;
     }
+    //自定义监听器
     private class DeleteListener implements View.OnClickListener{
         private int m_position;
 

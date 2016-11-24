@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 /**
- * Lru缓存功能
+ * 重写LruCache缓存算法
  * Created by feifei on 2016/11/24.
  */
 
@@ -18,6 +18,12 @@ class MyLruCache extends LruCache<String,Bitmap> {
     private MyLruCache(int maxSize) {
         super(maxSize);
     }
+
+    /**
+     * 获取可用最大内存
+     * @param maxSize
+     * @return
+     */
     static MyLruCache getInstance(int maxSize){
         if (instance == null){
             instance = new MyLruCache(maxSize);
@@ -25,6 +31,12 @@ class MyLruCache extends LruCache<String,Bitmap> {
         return instance;
     }
 
+    /**
+     * 获取图片大小
+     * @param key
+     * @param value
+     * @return
+     */
     @Override
     protected int sizeOf(String key, Bitmap value) {
         return value.getByteCount();
