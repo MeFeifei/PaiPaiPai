@@ -1,4 +1,4 @@
-package com.example.feifei.paipaipai;
+package view;
 
 import android.content.Context;
 import android.graphics.Canvas;

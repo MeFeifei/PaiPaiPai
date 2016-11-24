@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.example.feifei.paipaipai.CircleImageView
+            <view.CircleImageView
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 android:src="@drawable/headimg"

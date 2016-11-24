@@ -31,7 +31,7 @@
                 android:id="@+id/main_press_control"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <com.example.feifei.paipaipai.BothWayProgressBar
+                <view.BothWayProgressBar
                     android:id="@+id/main_progress_bar"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.feifei.paipaipai;
+package view;
 
 import android.content.Context;
 import android.content.res.TypedArray;

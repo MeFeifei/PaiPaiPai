@@ -26,6 +26,7 @@ import java.util.List;
 
 import DB.VideoDAO;
 import entity.Person;
+import view.BothWayProgressBar;
 
 public class RecordActivity extends AppCompatActivity implements SurfaceHolder.Callback, View.OnTouchListener, BothWayProgressBar.OnProgressEndListener {
 
