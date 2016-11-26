@@ -73,7 +73,7 @@ public class ImageLoader {
      * @param path
      * @return
      */
-    private Bitmap getBitmap(String path){
+    public Bitmap getBitmap(String path){
         Bitmap bitmap = null;
         try {
             if (TextUtils.isEmpty(path)){

@@ -87,9 +87,11 @@ public class VideoListAdapter extends BaseAdapter implements AbsListView.OnScrol
 
         setView(convertView, viewHolder.video);
         viewHolder.title.setText(videoItemBean.getItemVideoName());
-        //异步加载预览图片
+        //预览图片设置标识
         String urlTag = videoItemBean.getItemVideoPath();
         viewHolder.video.setTag(urlTag);
+
+//        viewHolder.video.setImageBitmap(imageLoader.getBitmap(videoItemBean.getItemVideoPath()));
 
         PlayListener playListener = new PlayListener(position);
         viewHolder.video.setOnClickListener(playListener);
